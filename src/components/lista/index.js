@@ -42,7 +42,7 @@ const Lista = () => {
                 getRowId={(row) => row.id}
                 onRowClick={goEdit}
             />
-            <Fab color="primary" aria-label="add" onClick={agregarEmpleado}>
+            <Fab color="primary" aria-label="add" onClick={agregarEmpleado} sx={{margin: '20px', bgcolor: '#62B6CB'}}>
                 <PersonAddAlt1 />
             </Fab>
         </Paper>

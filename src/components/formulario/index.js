@@ -1,22 +1,20 @@
-import { CircularProgress } from '@mui/material';
+import { Alert, CircularProgress, Divider, Paper } from '@mui/material';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import MostrarEmpleado from './Vista';
+import imagen from '../../media/alert.png'
 
 const Formulario = () => {
     // ======= HOOOKS ===========
     const {empleados} = useSelector(state => state.empleados);
+    const navigate = useNavigate();
     const editId = useParams().id;
     // ======= FUNCTIONS ===========
     const obtenerId = () => {
-        // if(empleados){
-        //     return empleados.length + 1;
-        // }
         if(empleados.length === 0){
             return 1;
         }else{
-            console.log(empleados);
             return Number(empleados[empleados.length-1].id)+1;
         }
     }
@@ -29,6 +27,7 @@ const Formulario = () => {
 
         }
     }
+    
     // ======= PRESETS ===========
     
     // ======= RENDER ===========
@@ -42,9 +41,23 @@ const Formulario = () => {
                 <MostrarEmpleado id={editId} edit={true} create={false} empleado={getEmpleadoSeleccionado()}/>
             );
         case '/show/'+ editId:
-            return (
-                <MostrarEmpleado id={editId} edit={false} create={false} empleado={getEmpleadoSeleccionado()}/>
-            );
+            if(getEmpleadoSeleccionado()){
+                return (
+                    <MostrarEmpleado id={editId} edit={false} create={false} empleado={getEmpleadoSeleccionado()}/>
+                );
+            }else{
+                setTimeout(() => {
+                    navigate('/')
+                }, 3000);
+                return (
+                    <Paper sx={{maxWidth: '500px'}}>
+                        <Divider />
+                            <Alert severity='error'> NO SE ENCONTRO EL EMPLEADO</Alert>
+                            <img src={imagen} alt='error' width={500}/>
+                        <Divider />
+                    </Paper>
+                );
+            };
         default:
             <CircularProgress/>;
     }

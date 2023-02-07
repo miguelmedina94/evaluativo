@@ -28,60 +28,6 @@ const initialState = {
             fecha_contrato: '2020-10-01',
             salario: 6534,
             comision: 8
-        },
-        {
-            id: '4',
-            nombre: 'Luciano Sebastian',
-            apellido: 'Morales Carrasco',
-            email: 'luciano.testamet123@gmail.com',
-            fecha_contrato: '2020-10-01',
-            salario: 6534,
-            comision: 8
-        },
-        {
-            id: '5',
-            nombre: 'Luciano Sebastian',
-            apellido: 'Morales Carrasco',
-            email: 'luciano.testamet123@gmail.com',
-            fecha_contrato: '2020-10-01',
-            salario: 6534,
-            comision: 8
-        },
-        {
-            id: '6',
-            nombre: 'Luciano Sebastian',
-            apellido: 'Morales Carrasco',
-            email: 'luciano.testamet123@gmail.com',
-            fecha_contrato: '2020-10-01',
-            salario: 6534,
-            comision: 8
-        },
-        {
-            id: '7',
-            nombre: 'Luciano Sebastian',
-            apellido: 'Morales Carrasco',
-            email: 'luciano.testamet123@gmail.com',
-            fecha_contrato: '2020-10-01',
-            salario: 6534,
-            comision: 8
-        },
-        {
-            id: '8',
-            nombre: 'Luciano Sebastian',
-            apellido: 'Morales Carrasco',
-            email: 'luciano.testamet123@gmail.com',
-            fecha_contrato: '2020-10-01',
-            salario: 6534,
-            comision: 8
-        },
-        {
-            id: '9',
-            nombre: 'Luciano Sebastian',
-            apellido: 'Morales Carrasco',
-            email: 'luciano.testamet123@gmail.com',
-            fecha_contrato: '2020-10-01',
-            salario: 6534,
-            comision: 8
         }
     ]
 }
@@ -92,6 +38,7 @@ export const empleadosSlice = createSlice({
     reducers:{
         nuevoEmpleado: (state,action) => {
             state.empleados.push(action.payload);
+            
         },
         reemplazarEmpleado: (state,action) => {
             state.empleados[action.payload.id-1] = action.payload;
