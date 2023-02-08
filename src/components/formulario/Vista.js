@@ -1,9 +1,9 @@
-import { Error } from '@mui/icons-material';
 import { Alert, Button, Paper, Snackbar, Stack, TextField, Typography } from '@mui/material';
 import { Container } from '@mui/system';
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { validateSliceChange } from '../../config/validate';
 import { nuevoEmpleado, reemplazarEmpleado } from '../../store/empleadosSlice/slice';
 
 const MostrarEmpleado = (props) => {
@@ -11,13 +11,13 @@ const MostrarEmpleado = (props) => {
     const [empleado , setEmpleado] = useState({id:props.id.toString()});
     const [mode , setMode] = useState(props.mode);
     const [editable, setEditable] = useState(false);
-    const [alertMessage , setAlertmessage] = useState('');
-    const [open , setOpen] = useState(false);
+    const [alert , setAlert] = useState({});
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
     useEffect(() => {
         setTextField();
+        
     }, [])
     
 
@@ -34,16 +34,20 @@ const MostrarEmpleado = (props) => {
         switch(mode){
             case 'new':
                 dispatch(nuevoEmpleado(empleado));
-                navigate('/');
-                setAlertmessage(`Se creo el empleado ${empleado.nombre} correctamente`)
-                setOpen(true);
+                setAlert({open: true, 
+                        message: `Se creo el empleado ${empleado.nombre} correctamente`,
+                        type: 'success'});
+                setTimeout(() => {
+                    navigate('/');
+                }, 3000);
                 break;
             case 'edit':
                 dispatch(reemplazarEmpleado(empleado));
                 setEditable(!editable);
                 setMode('show');
-                setAlertmessage(`Se modifico el empleado ${empleado.nombre} correctamente`)
-                setOpen(true);
+                setAlert({open: true, 
+                    message: `Se modifico el empleado ${empleado.nombre} correctamente`,
+                    type: 'success'});
                 break;
             case 'show':
                 setEditable(!editable);
@@ -60,7 +64,6 @@ const MostrarEmpleado = (props) => {
                 setEmpleado({})
                 break;
             case 'edit':
-                setEditable(!editable);
                 setMode('show');
                 setTextField();
                 setEditable(false);
@@ -73,13 +76,21 @@ const MostrarEmpleado = (props) => {
         }
     };
 
-    const onClose = (reason) => {
-        if (reason === 'clickaway') {
-            return;
+    const onClose = (event,reason) => {
+        if (reason !== 'clickaway') {
+            setAlert({open: false});
         }
-        setOpen(false);
     };
 
+    const mostrarMensaje = () => {
+        return (
+                <Snackbar open={alert.open} autoHideDuration={3000} onClose={onClose}>
+                    <Alert onClose={onClose} severity={alert.type} sx={{ width: '100%'}}>
+                    {alert.message}
+                    </Alert>
+                </Snackbar>
+        );
+    };
     // ======= PRESETS ===========
     const obtenerTitulo = () => {
         switch (mode) {
@@ -111,10 +122,9 @@ const MostrarEmpleado = (props) => {
         return empleado[attr] ? empleado[attr] : '';
     }
 
-    const CustomTextField = (name) =>{
+    const customTextField = (name) =>{
         const label = name[0].toUpperCase() + name.substring(1).replace('_',' ');
         if(name === 'fecha_contrato'){
-            const errorFlag = getValueTF(name).length !== 10;
             return (
                 <TextField  name={name}
                 disabled={!editable} 
@@ -122,53 +132,51 @@ const MostrarEmpleado = (props) => {
                 label={label}
                 type={'date'}
                 InputLabelProps={{shrink: true}} 
-                onChange={onChangeField} 
-                error={errorFlag}
+                onChange={onChangeField}
+                onBlur={() => setAlert(validateSliceChange(empleado))}
                 sx={{margin: '20px'}}
                 />
             );
         }else{
-            const errorFlag = getValueTF(name).length < 3;
             return (
                 <TextField  name={name}
                 disabled={!editable} 
                 value={getValueTF(name)} 
                 label={label}
-                onChange={onChangeField} 
-                error={errorFlag}
+                onChange={onChangeField}
+                onBlur={() => setAlert(validateSliceChange(empleado,name))}
+                required
                 sx={{margin: '20px'}}
                 />
             );
         };
     };
+
     // ======= RENDER ===========
     return (
         <>
+            
             <Stack spacing={2} sx={{ width: '100%' }}>
-                <Snackbar open={open} autoHideDuration={3000} onClose={onClose}>
-                    <Alert onClose={onClose} severity="success" sx={{ width: '100%' }}>
-                    {alertMessage}
-                    </Alert>
-                </Snackbar>
+                {mostrarMensaje()}
             </Stack>
             <Paper elevation={6} sx={{padding: '10px', maxWidth: '600px'}}>
                 <Typography variant='h5'>
                     {obtenerTitulo()}
                 </Typography>
-                {CustomTextField('nombre')}
-                {CustomTextField('apellido')}
-                {CustomTextField('email')}
-                {CustomTextField('telefono')}
-                {CustomTextField('salario')}
-                {CustomTextField('comision')}
-                {CustomTextField('fecha_contrato')}
+                {customTextField('nombre')}
+                {customTextField('apellido')}
+                {customTextField('email')}
+                {customTextField('telefono')}
+                {customTextField('salario')}
+                {customTextField('comision')}
+                {customTextField('fecha_contrato')}
                 <Container sx={{width: '100%',display: 'flex', justifyContent: 'flex-end', margin: '20px'}}>
-                        <Button variant='contained' onClick={primaryButton} sx={{marginRight: '10px'}}>
-                            {getTextPrimaryButton()}
-                        </Button>
-                        <Button variant='contained' onClick={botonSecundario} sx={{marginLeft: '10px', bgcolor: '#64748B'}}>
-                            {getTextSecondaryButton()}
-                        </Button>
+                    <Button variant='contained' onClick={primaryButton} sx={{marginRight: '10px'}}>
+                        {getTextPrimaryButton()}
+                    </Button>
+                    <Button variant='contained' onClick={botonSecundario} sx={{marginLeft: '10px', bgcolor: '#64748B'}}>
+                        {getTextSecondaryButton()}
+                    </Button>
                 </Container>
             </Paper>
             </>

@@ -35,14 +35,11 @@ const Lista = () => {
         { field: 'nombre', headerName: 'Nombre', width: 130 },
         { field: 'apellido', headerName: 'Apellido', width: 130 },
         { field: 'email',headerName: 'Email',width: 180},
-        { field: 'telefono', headerName: 'Telefono',type: 'string', width: 130 },
-        { field: 'fecha_contrato',headerName: 'Fecha de contrato',type: 'date',width: 150},
-        { field: 'salario',headerName: 'Salario',type: 'number',width: 90},
-        { field: 'comision',headerName: 'Comision',type: 'number',width: 90}
+        { field: 'telefono', headerName: 'Telefono',type: 'string', width: 130 }
     ];
     // ======= RENDER ===========
     return (
-        <Paper sx={{ height: 350, width: '100%' }}>
+        <Paper sx={{ height: 350, maxWidth: '700px'}}>
             <DataGrid
                 rows={empleados}
                 columns={columns}
