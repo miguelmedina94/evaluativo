@@ -23,8 +23,6 @@ const Formulario = () => {
         const empleadoSeleccionado = empleados.find(empleado => empleado.id === editId);
         if(empleadoSeleccionado){
             return empleadoSeleccionado;
-        }else{
-
         }
     }
     
@@ -34,16 +32,30 @@ const Formulario = () => {
     switch (window.location.pathname) {
         case '/new':
             return (
-                <MostrarEmpleado id={obtenerId()} edit={false} create={true}/>
+                <MostrarEmpleado id={obtenerId()} mode={'new'}/>
             );
         case '/edit/'+ editId:
-            return (
-                <MostrarEmpleado id={editId} edit={true} create={false} empleado={getEmpleadoSeleccionado()}/>
-            );
+            if(getEmpleadoSeleccionado()){
+                return (
+                    <MostrarEmpleado id={editId} mode={'edit'} empleado={getEmpleadoSeleccionado()}/>
+                );
+            }else{
+                setTimeout(() => {
+                    navigate('/')
+                }, 3000);
+                return (
+                    <Paper sx={{maxWidth: '500px'}}>
+                        <Divider />
+                            <Alert severity='error'> NO SE ENCONTRO EL EMPLEADO</Alert>
+                            <img src={imagen} alt='error' width={500}/>
+                        <Divider />
+                    </Paper>
+                );
+            };
         case '/show/'+ editId:
             if(getEmpleadoSeleccionado()){
                 return (
-                    <MostrarEmpleado id={editId} edit={false} create={false} empleado={getEmpleadoSeleccionado()}/>
+                    <MostrarEmpleado id={editId} mode={'show'} empleado={getEmpleadoSeleccionado()}/>
                 );
             }else{
                 setTimeout(() => {

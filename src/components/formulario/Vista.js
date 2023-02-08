@@ -1,3 +1,4 @@
+import { Error } from '@mui/icons-material';
 import { Alert, Button, Paper, Snackbar, Stack, TextField, Typography } from '@mui/material';
 import { Container } from '@mui/system';
 import React, { useState, useEffect } from 'react';
@@ -8,8 +9,8 @@ import { nuevoEmpleado, reemplazarEmpleado } from '../../store/empleadosSlice/sl
 const MostrarEmpleado = (props) => {
     // ======= HOOOKS ===========
     const [empleado , setEmpleado] = useState({id:props.id.toString()});
-    const [editMode , setEditMode] = useState(props.edit);
-    const [editable, setEditable] = useState(editMode || props.create);
+    const [mode , setMode] = useState(props.mode);
+    const [editable, setEditable] = useState(false);
     const [alertMessage , setAlertmessage] = useState('');
     const [open , setOpen] = useState(false);
     const navigate = useNavigate();
@@ -30,35 +31,48 @@ const MostrarEmpleado = (props) => {
     };
 
     const primaryButton = () => {
-        if(props.create){
-            dispatch(nuevoEmpleado(empleado));
-            navigate('/');
-            setAlertmessage(`Se creo el empleado ${empleado.nombre} correctamente`)
-            setOpen(true);
-        }else if(editMode){
-            dispatch(reemplazarEmpleado(empleado));
-            setEditMode(!editMode);
-            setEditable(!editable);
-            setAlertmessage(`Se modifico el empleado ${empleado.nombre} correctamente`)
-            setOpen(true);
-        }else{
-            setEditMode(!editMode);
-            setEditable(!editable);
+        switch(mode){
+            case 'new':
+                dispatch(nuevoEmpleado(empleado));
+                navigate('/');
+                setAlertmessage(`Se creo el empleado ${empleado.nombre} correctamente`)
+                setOpen(true);
+                break;
+            case 'edit':
+                dispatch(reemplazarEmpleado(empleado));
+                setEditable(!editable);
+                setMode('show');
+                setAlertmessage(`Se modifico el empleado ${empleado.nombre} correctamente`)
+                setOpen(true);
+                break;
+            case 'show':
+                setEditable(!editable);
+                setMode('edit');
+            break;
+            default:
+                return;
         }
     };
 
     const botonSecundario = () => {
-        if(props.create){
-            setEmpleado({});
-        }else if(editMode){
-            setEditable(!editable);
-            setEditMode(!editMode)
-        }else{
-            navigate('/');
+        switch (mode) {
+            case 'new':
+                setEmpleado({})
+                break;
+            case 'edit':
+                setEditable(!editable);
+                setMode('show');
+                setTextField();
+                setEditable(false);
+                break;
+            case 'show':
+                navigate('/');
+                break;
+            default:
+                return;
         }
     };
 
-    
     const onClose = (reason) => {
         if (reason === 'clickaway') {
             return;
@@ -68,29 +82,65 @@ const MostrarEmpleado = (props) => {
 
     // ======= PRESETS ===========
     const obtenerTitulo = () => {
-        if(props.create){
-            return `Creando empleado - id: ${props.id}`;
-        }else if(props.edit){
-            return `Editando empleado - id: ${props.id}`;
-        }else{
-            return `Viendo empleado - id: ${props.id}`;
+        switch (mode) {
+            case 'new':
+                return `Creando empleado - id: ${props.id}`;
+            case 'edit':
+                return `Editando empleado - id: ${props.id}`;
+            case 'show':
+                return `Viendo empleado - id: ${props.id}`;
+            default:
+                return;
         };
     };
 
     const getTextPrimaryButton = () => {
-        return !editMode && !props.create ? 'Editar' : 'Guardar'
+        return mode === 'show' ? 'Editar' : 'Guardar';
     }
 
     const getTextSecondaryButton = () => {
-        return props.create ? 'Limpiar' : 'Cancelar'
+        return mode === 'new' ? 'Limpiar' : 'Cancelar';
     }
 
     const setTextField = () => {
-        if(props.empleado){
-            setEmpleado(props.empleado);
-        }
+        mode === 'show' ? setEditable(false) : setEditable(true);
+        props.empleado ?  setEmpleado(props.empleado): setEmpleado({id:props.id.toString()});
     }
 
+    const getValueTF = (attr) =>{
+        return empleado[attr] ? empleado[attr] : '';
+    }
+
+    const CustomTextField = (name) =>{
+        const label = name[0].toUpperCase() + name.substring(1).replace('_',' ');
+        if(name === 'fecha_contrato'){
+            const errorFlag = getValueTF(name).length !== 10;
+            return (
+                <TextField  name={name}
+                disabled={!editable} 
+                value={getValueTF(name)} 
+                label={label}
+                type={'date'}
+                InputLabelProps={{shrink: true}} 
+                onChange={onChangeField} 
+                error={errorFlag}
+                sx={{margin: '20px'}}
+                />
+            );
+        }else{
+            const errorFlag = getValueTF(name).length < 3;
+            return (
+                <TextField  name={name}
+                disabled={!editable} 
+                value={getValueTF(name)} 
+                label={label}
+                onChange={onChangeField} 
+                error={errorFlag}
+                sx={{margin: '20px'}}
+                />
+            );
+        };
+    };
     // ======= RENDER ===========
     return (
         <>
@@ -101,17 +151,17 @@ const MostrarEmpleado = (props) => {
                     </Alert>
                 </Snackbar>
             </Stack>
-            <Paper sx={{padding: '10px', maxWidth: '600px'}}>
+            <Paper elevation={6} sx={{padding: '10px', maxWidth: '600px'}}>
                 <Typography variant='h5'>
                     {obtenerTitulo()}
                 </Typography>
-                <TextField name='nombre' disabled={!editable} value={empleado.nombre ? empleado.nombre : ''} label='Nombres' onChange={onChangeField} sx={{margin: '20px'}}/>
-                <TextField name='apellido' disabled={!editable} value={empleado.apellido ? empleado.apellido : ''} label='Apellidos' onChange={onChangeField} sx={{margin: '20px'}}/>
-                <TextField name='email' disabled={!editable} label='Email' value={empleado.email ? empleado.email : ''} onChange={onChangeField} sx={{margin: '20px'}}/>
-                <TextField name='fecha_contrato' disabled={!editable} type='date' label='Fecha de contratacion' value={empleado.fecha_contrato ? empleado.fecha_contrato : ''}
-                            InputLabelProps={{shrink: true}} onChange={onChangeField} sx={{margin: '20px'}}/>
-                <TextField name='salario' disabled={!editable} label='Salario' value={empleado.salario ? empleado.salario : ''} onChange={onChangeField} sx={{margin: '20px'}}/>
-                <TextField name='comision' disabled={!editable} label='Comision' value={empleado.comision ? empleado.comision : ''} onChange={onChangeField} sx={{margin: '20px'}}/>
+                {CustomTextField('nombre')}
+                {CustomTextField('apellido')}
+                {CustomTextField('email')}
+                {CustomTextField('telefono')}
+                {CustomTextField('salario')}
+                {CustomTextField('comision')}
+                {CustomTextField('fecha_contrato')}
                 <Container sx={{width: '100%',display: 'flex', justifyContent: 'flex-end', margin: '20px'}}>
                         <Button variant='contained' onClick={primaryButton} sx={{marginRight: '10px'}}>
                             {getTextPrimaryButton()}
