@@ -20,7 +20,6 @@ const MostrarEmpleado = (props) => {
         
     }, [])
     
-
     // ======= FUNCTIONS ===========
     const onChangeField = (e) => {
         const value = e.target.value;
@@ -33,21 +32,25 @@ const MostrarEmpleado = (props) => {
     const primaryButton = () => {
         switch(mode){
             case 'new':
-                dispatch(nuevoEmpleado(empleado));
-                setAlert({open: true, 
-                        message: `Se creo el empleado ${empleado.nombre} correctamente`,
-                        type: 'success'});
-                setTimeout(() => {
-                    navigate('/');
-                }, 3000);
+                if(alert.type === 'success'){
+                    dispatch(nuevoEmpleado(empleado));
+                    setAlert({open: true, 
+                            message: `Se creo el empleado ${empleado.nombre} correctamente`,
+                            type: 'success'});
+                    setTimeout(() => {
+                        navigate('/');
+                    }, 3000);
+                }
                 break;
             case 'edit':
-                dispatch(reemplazarEmpleado(empleado));
-                setEditable(!editable);
-                setMode('show');
-                setAlert({open: true, 
-                    message: `Se modifico el empleado ${empleado.nombre} correctamente`,
-                    type: 'success'});
+                if(alert.type === 'success'){
+                    dispatch(reemplazarEmpleado(empleado));
+                    setEditable(!editable);
+                    setMode('show');
+                    setAlert({open: true, 
+                        message: `Se modifico el empleado ${empleado.nombre} correctamente`,
+                        type: 'success'});
+                }
                 break;
             case 'show':
                 setEditable(!editable);
@@ -56,7 +59,7 @@ const MostrarEmpleado = (props) => {
             default:
                 return;
         }
-    };
+    }
 
     const botonSecundario = () => {
         switch (mode) {
@@ -91,6 +94,7 @@ const MostrarEmpleado = (props) => {
                 </Snackbar>
         );
     };
+    
     // ======= PRESETS ===========
     const obtenerTitulo = () => {
         switch (mode) {
@@ -127,6 +131,7 @@ const MostrarEmpleado = (props) => {
         if(name === 'fecha_contrato'){
             return (
                 <TextField  name={name}
+                required
                 disabled={!editable} 
                 value={getValueTF(name)} 
                 label={label}
@@ -138,14 +143,15 @@ const MostrarEmpleado = (props) => {
                 />
             );
         }else{
+            const req = name === 'nombre' || name === 'apellido' || name === 'telefono' ? true : false;
             return (
                 <TextField  name={name}
                 disabled={!editable} 
                 value={getValueTF(name)} 
                 label={label}
                 onChange={onChangeField}
-                onBlur={() => setAlert(validateSliceChange(empleado,name))}
-                required
+                onBlur={() => setAlert(validateSliceChange(empleado))}
+                required={req}
                 sx={{margin: '20px'}}
                 />
             );
