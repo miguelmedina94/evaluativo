@@ -3,6 +3,7 @@ import empleadosSlice from "./empleadosSlice/slice";
 
 export const store = configureStore({
     reducer: {
-        empleados: empleadosSlice
+        empleados: empleadosSlice,
+        idNuevo: empleadosSlice
     },
 });

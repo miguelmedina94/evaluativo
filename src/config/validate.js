@@ -1,3 +1,4 @@
+//FUNCION PARA VALIDAD LOS CAMPOS SI ESTAN LLENOS Y QUE NO GUARDE EN ESE CASO
 export const validateSliceChange = (empleado) => {
     const error = {type: 'success'};
         if (empleado.nombre === ''){

@@ -11,7 +11,7 @@ const MostrarEmpleado = (props) => {
     const [empleado , setEmpleado] = useState({id:props.id.toString()});
     const [mode , setMode] = useState(props.mode);
     const [editable, setEditable] = useState(false);
-    const [alert , setAlert] = useState({});
+    const [alert , setAlert] = useState({type:'success'});
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -28,17 +28,17 @@ const MostrarEmpleado = (props) => {
             [e.target.name]: value
         });
     };
-
+    //FUCION PARA EL BOTON AZUL, FUNCIONA SEGUN EL 'MODO' DEL FORMULARIO
     const primaryButton = () => {
         switch(mode){
             case 'new':
                 if(alert.type === 'success'){
-                    dispatch(nuevoEmpleado(empleado));
                     setAlert({open: true, 
                             message: `Se creo el empleado ${empleado.nombre} correctamente`,
                             type: 'success'});
                     setTimeout(() => {
                         navigate('/');
+                        dispatch(nuevoEmpleado(empleado));
                     }, 3000);
                 }
                 break;
@@ -78,7 +78,7 @@ const MostrarEmpleado = (props) => {
                 return;
         }
     };
-
+    //FUNCION ONCLOSE PARA CERRAR EL ALERT AUTOMATICA O MANUALMENTE
     const onClose = (event,reason) => {
         if (reason !== 'clickaway') {
             setAlert({open: false});
@@ -126,8 +126,9 @@ const MostrarEmpleado = (props) => {
         return empleado[attr] ? empleado[attr] : '';
     }
 
+    //FUNCION QUE ENTREGA LOS TEXTFIELDS PERSONALIZADOS
     const customTextField = (name) =>{
-        const label = name[0].toUpperCase() + name.substring(1).replace('_',' ');
+        const label = name[0].toUpperCase() + name.substring(1).replace('_',' de ');
         if(name === 'fecha_contrato'){
             return (
                 <TextField  name={name}

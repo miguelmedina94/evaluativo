@@ -32,7 +32,8 @@ const initialState = {
             salario: 6534,
             comision: 8
         }
-    ]
+    ],
+    idNuevo:4
 }
 
 export const empleadosSlice = createSlice({
@@ -41,7 +42,7 @@ export const empleadosSlice = createSlice({
     reducers:{
         nuevoEmpleado: (state,action) => {
             state.empleados.push(action.payload);
-            
+            state.idNuevo++;
         },
         reemplazarEmpleado: (state,action) => {
             state.empleados[action.payload.id-1] = action.payload;

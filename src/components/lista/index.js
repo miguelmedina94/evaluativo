@@ -30,6 +30,7 @@ const Lista = () => {
     }
 
     // ======= PRESETS ===========
+    //PREPARAR LAS COLUMNAS Y QUE DATOS LEERAN DEL EMPLEADOS
     const columns = [
         { field: 'id', headerName: 'ID',type: 'number', width: 70 },
         { field: 'nombre', headerName: 'Nombre', width: 130 },

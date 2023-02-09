@@ -8,16 +8,9 @@ import imagen from '../../media/alert.png'
 const Formulario = () => {
     // ======= HOOOKS ===========
     const {empleados} = useSelector(state => state.empleados);
+    const {idNuevo}  = useSelector(state => state.idNuevo);
     const navigate = useNavigate();
     const editId = useParams().id;
-    // ======= FUNCTIONS ===========
-    const obtenerId = () => {
-        if(empleados.length === 0){
-            return 1;
-        }else{
-            return Number(empleados[empleados.length-1].id)+1;
-        }
-    }
 
     const getEmpleadoSeleccionado = () => {
         const empleadoSeleccionado = empleados.find(empleado => empleado.id === editId);
@@ -32,7 +25,7 @@ const Formulario = () => {
     switch (window.location.pathname) {
         case '/new':
             return (
-                <MostrarEmpleado id={obtenerId()} mode={'new'}/>
+                <MostrarEmpleado id={idNuevo} mode={'new'}/>
             );
         case '/edit/'+ editId:
             if(getEmpleadoSeleccionado()){
