@@ -1,72 +1,71 @@
-import { Alert, CircularProgress, Divider, Paper } from '@mui/material';
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { useNavigate, useParams } from 'react-router-dom';
-import MostrarEmpleado from './Vista';
-import imagen from '../../media/alert.png'
+import React, { useState } from 'react';
+import { Button,Container,Paper, TextField, Typography } from '@mui/material';
 
-const Formulario = () => {
+const Formulario = ({config}) => {
     // ======= HOOOKS ===========
-    const {empleados} = useSelector(state => state.empleados);
-    const {idNuevo}  = useSelector(state => state.idNuevo);
-    const navigate = useNavigate();
-    const editId = useParams().id;
 
-    const getEmpleadoSeleccionado = () => {
-        const empleadoSeleccionado = empleados.find(empleado => empleado.id === editId);
-        if(empleadoSeleccionado){
-            return empleadoSeleccionado;
-        }
-    }
+    // ======= FUNCTIONS ===========
     
+    console.log(config);
     // ======= PRESETS ===========
+    //FUNCION QUE ENTREGA LOS TEXTFIELDS PERSONALIZADOS
+    const customTextField = (name) =>{
+        const label = name[0].toUpperCase() + name.substring(1).replace('_',' de ');
+        if(name === 'fecha_contrato'){
+            return (
+                <TextField  name={name}
+                required
+                disabled={!config.editable} 
+                value={config.getValueTF(name)} 
+                label={label}
+                type={'date'}
+                InputLabelProps={{shrink: true}} 
+                onChange={config.onChangeField}
+                onBlur={config.onBlurField}
+                sx={{margin: '20px'}}
+                />
+            );
+        }else{
+            const req = name === 'nombre' || name === 'apellido' || name === 'telefono' ? true : false;
+            return (
+                <TextField  name={name}
+                disabled={!config.editable} 
+                value={config.getValueTF(name)} 
+                label={label}
+                onChange={config.onChangeField}
+                onBlur={config.onBlurField}
+                required={req}
+                sx={{margin: '20px'}}
+                />
+            );
+        };
+    };
     
     // ======= RENDER ===========
-    switch (window.location.pathname) {
-        case '/new':
-            return (
-                <MostrarEmpleado id={idNuevo} mode={'new'}/>
-            );
-        case '/edit/'+ editId:
-            if(getEmpleadoSeleccionado()){
-                return (
-                    <MostrarEmpleado id={editId} mode={'edit'} empleado={getEmpleadoSeleccionado()}/>
-                );
-            }else{
-                setTimeout(() => {
-                    navigate('/')
-                }, 3000);
-                return (
-                    <Paper sx={{maxWidth: '500px'}}>
-                        <Divider />
-                            <Alert severity='error'> NO SE ENCONTRO EL EMPLEADO</Alert>
-                            <img src={imagen} alt='error' width={500}/>
-                        <Divider />
-                    </Paper>
-                );
-            };
-        case '/show/'+ editId:
-            if(getEmpleadoSeleccionado()){
-                return (
-                    <MostrarEmpleado id={editId} mode={'show'} empleado={getEmpleadoSeleccionado()}/>
-                );
-            }else{
-                setTimeout(() => {
-                    navigate('/')
-                }, 3000);
-                return (
-                    <Paper sx={{maxWidth: '500px'}}>
-                        <Divider />
-                            <Alert severity='error'> NO SE ENCONTRO EL EMPLEADO</Alert>
-                            <img src={imagen} alt='error' width={500}/>
-                        <Divider />
-                    </Paper>
-                );
-            };
-        default:
-            <CircularProgress/>;
+    if(config.empleado){
+        return (
+            <Paper elevation={6} sx={{padding: '10px', maxWidth: '600px'}}>
+                <Typography variant='h5'>
+                    {config.title}
+                </Typography>
+                {customTextField('nombre')}
+                {customTextField('apellido')}
+                {customTextField('email')}
+                {customTextField('telefono')}
+                {customTextField('salario')}
+                {customTextField('comision')}
+                {customTextField('fecha_contrato')}
+                <Container sx={{width: '100%',display: 'flex', justifyContent: 'flex-end', margin: '20px'}}>
+                    <Button variant='contained' onClick={config.primaryButton} sx={{marginRight: '10px'}}>
+                        {config.textPrimaryButton}
+                    </Button>
+                    <Button variant='contained' onClick={config.secondaryButton} sx={{marginLeft: '10px', bgcolor: '#64748B'}}>
+                        {config.textSecondaryButton}
+                    </Button>
+                </Container>
+            </Paper>
+        );
     }
-    
 }
 
 export default Formulario;

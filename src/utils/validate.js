@@ -23,4 +23,3 @@ export const validateSliceChange = (empleado) => {
         }
     return error;
 }
-
