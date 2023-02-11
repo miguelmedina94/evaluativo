@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Button,Container,Paper, TextField, Typography } from '@mui/material';
 
 const Formulario = ({config}) => {
@@ -6,7 +6,6 @@ const Formulario = ({config}) => {
 
     // ======= FUNCTIONS ===========
     
-    console.log(config);
     // ======= PRESETS ===========
     //FUNCION QUE ENTREGA LOS TEXTFIELDS PERSONALIZADOS
     const customTextField = (name) =>{

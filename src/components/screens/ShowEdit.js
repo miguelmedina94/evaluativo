@@ -93,13 +93,13 @@ const ShowEdit = ( props ) => {
             [e.target.name]: value
         });
     };
-    
+
     const getValueTF = (attr) =>{
         return empleado[attr] ? empleado[attr] : '';
     }
 
-    const onBlurField = () => {
-        setAlert(validateSliceChange(empleado));
+    const onBlurField = (e) => {
+        setAlert(validateSliceChange(empleado,e));
     }
 
     const onClose = (event,reason) => {
