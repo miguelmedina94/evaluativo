@@ -1,11 +1,14 @@
-import { Alert, Snackbar } from '@mui/material';
-import { Stack } from '@mui/system';
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
+
+import { Alert, Divider, Paper, Snackbar } from '@mui/material';
+import { Stack } from '@mui/system';
+
 import { reemplazarEmpleado } from '../../store/empleadosSlice/slice';
 import { validateSliceChange } from '../../utils/validate';
 import Formulario from '../formulario';
+import imagen from '../../media/alert.png'
 
 const ShowEdit = ( props ) => {
     // ======= HOOOKS ===========
@@ -118,6 +121,20 @@ const ShowEdit = ( props ) => {
         );
     };
 
+    const empleadoNotFound = () => {
+        setTimeout(() => {
+            navigate('/');
+        }, 3000);
+        return(
+            <Paper sx={{maxWidth: '500px'}}>
+            <Divider />
+                <Alert severity='error'> NO SE ENCONTRO EL EMPLEADO</Alert>
+                <img src={imagen} alt='error' width={500}/>
+            <Divider />
+        </Paper>
+        )
+    }
+
     // ======= PRESETS ===========
     const setearEmpleado = () => {
         const empleadoSeleccionado = empleados.find( actual => actual.id === id);
@@ -134,8 +151,9 @@ const ShowEdit = ( props ) => {
                 <Formulario config={screenConfig()}/>
             </>
         );
+    }else{
+        return empleadoNotFound();
     }
-    
 }
 
 export default ShowEdit;
